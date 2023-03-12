@@ -7,7 +7,7 @@ const auth = require('../middleware/auth')
 const articleRouter = express.Router()
 
 articleRouter.get('/articles', getAllArticles)
-articleRouter.get('/:id', auth, getArticleById)
+articleRouter.get('/:id', getArticleById)
 articleRouter.post('/', auth, addArticle)
 articleRouter.put('/:id', auth, updateArticle)
 articleRouter.delete('/:id', auth, deleteArticle)

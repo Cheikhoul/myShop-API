@@ -7,26 +7,35 @@ async function getAllUser(req, res) {
     const users = await User.findAll();
     res.json(users)
 }
+async function getUserByEmail(req, res) {
+    const user = await User.findOne({where: {Email:req.params.Email}});
+    res.json(user)
+}
 
-async function getPanier(req, res){
-    if(req.user){
-        const panier = await Commande.findOne({where: {Status: 0, UserId: req.user.dataValues.Id}});
-        const lignes_panier = await LigneCommande.findAll({where: {CommandeId: panier.Id}});
-        res.json(lignes_panier)
+async function getPanier(req, res) {
+    const userId = req.query.userId;
+    const token = req.query.token;
+    if (userId && token) {
+      const panier = await Commande.findOne({where: {Status: 0, UserId: userId}});
+        res.json(panier); 
+    } else {
+      res.status(401).json({mess: "Veuillez vous connecter."});
     }
-    res.status(401).json({mess: "Veuillez vous connecter."})
 }
 
 async function addToPanier(req, res){
-    if(req.user){
+    const userId = req.query.userId;
+    const token = req.query.token;
+    if(userId && token) {
         const ligne_commande = await LigneCommande.create({
             ArticleId: req.body.ArticleId,
             CommandeId: req.body.CommandeId,
             Quantity: req.body.Quantity
         });
-        if(!ligne_commande){
-            const commande = await Commande.findOne({where: {Statut: 0, UserId: req.user.dataValues.Id}})
-        }
+        res.json(ligne_commande);
+    }
+    else {
+      res.status(401).json({mess: "Veuillez vous connecter."});
     }
 }
 
@@ -72,23 +81,32 @@ async function updateOrderStatus(req, res){
 
 async function addUser(req, res) {
     if (!req.body.Email || !req.body.Password || !req.body.Name || !req.body.Surname || !req.body.Admin) {
-        res.status(400).json({ mess: "Champs obligatoires : Email, Mot de passe, Prenom, Nom et Role." })
-        return
+      res.status(400).json({ mess: "Champs obligatoires : Email, Mot de passe, Prenom, Nom et Role." });
+      return;
     }
-    const user = await User.create({
-        Email: req.body.Email,
-        Password: req.body.Password,
-        Name: req.body.Name,
-        Surname: req.body.Surname,
-        Address: req.body.Address,
-        Admin: req.body.Admin
+  
+    const createdUser = await User.create({
+      Email: req.body.Email,
+      Password: req.body.Password,
+      Name: req.body.Name,
+      Surname: req.body.Surname,
+      Address: req.body.Address,
+      Admin: req.body.Admin
     });
-    await Commande.create({
-        UserId: user.Id,
-        Status: 0
-    })
-    res.json(user)
-}
+  
+    setTimeout(async () => {
+        const createdCommande = await Commande.create({
+          UserId: createdUser.id,
+          Status: 0
+        });
+    
+        console.log(createdUser);
+        console.log(createdCommande);
+      }, 5000);
+  
+    res.json(createdUser);
+  }
+  
 
 async function updateUser(req, res){
     if (!req.user || !req.body.Email || !req.body.Password || !req.body.Name || !req.body.Surname || !req.body.Admin) {
@@ -130,4 +148,4 @@ async function connectUser(req, res) {
 }
 module.exports = { getAllUser, addUser, connectUser, getPanier,
      validatePanier, updateUser, deleteUser, getOrderHistory,
-     updateOrderStatus}
+     updateOrderStatus, addToPanier, getUserByEmail}

@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 
 function auth(req, res, next) {
-    console.log("coucou");
     if (!req.headers || !req.headers.authorization || !req.headers.authorization.split(" ")[1]) {
         res.status(401).json({ mess: 'token non transmis' })
     }

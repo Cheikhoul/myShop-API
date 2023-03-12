@@ -4,7 +4,7 @@ const articleRouter = require('./router/article');
 const userRouter = require('./router/user')
 const app = express()
 const port = 3000;
-
+const cors = require('cors')
 const mysql = require('mysql2');
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -12,6 +12,7 @@ const connection = mysql.createConnection({
   password: '09121968.',
   database: 'myShop'
 });
+
 connection.query('CREATE DATABASE IF NOT EXISTS myShop', function(err, results) {
     if (err) {
       console.error(err);
@@ -25,7 +26,7 @@ connection.query('CREATE DATABASE IF NOT EXISTS myShop', function(err, results) 
     await sequelize.sync({ force: false });
 })();
 app.use(express.json())
-
+app.use(cors())
 app.use('/api/user', userRouter)
 app.use('/api/article', articleRouter)
 
