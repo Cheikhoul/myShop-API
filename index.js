@@ -6,6 +6,7 @@ const app = express()
 const port = 3000;
 const cors = require('cors')
 const mysql = require('mysql2');
+const bodyParser = require('body-parser');
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'cheikhoul',
@@ -29,6 +30,8 @@ app.use(express.json())
 app.use(cors())
 app.use('/api/user', userRouter)
 app.use('/api/article', articleRouter)
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
     res.json({ mess: "Bienvenue sur myShop" })
