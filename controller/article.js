@@ -46,8 +46,7 @@ async function updateArticle(req, res) {
         return
     }
     if (req.user.dataValues.Admin) {
-
-        const article = await Article.findOne({where: {id:req.params.id }});
+        const article = await Article.findOne({where: {id:req.params.id}});
         if(!article){
             res.status(404).json({mess: "Article non trouvé."})
         }
