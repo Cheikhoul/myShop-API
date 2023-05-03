@@ -48,18 +48,28 @@ async function getOrderHistory(req, res){
 }
 
 async function validatePanier(req, res){
-    const panier = await Commande.findOne({where: {Status: 0, UserId: req.user.dataValues.Id}});
-    const lignes_commandes = await LigneCommande.findOne({where: {CommandeId: panier.Id}});
-    if(lignes_commande){
-        panier.Status = 1;
-        panier.save();
-        await Commande.create({
-        UserId: panier.UserId,
-        Status: 0
-    })
-    res.json(panier)
+    const userId = req.body.userId;
+    const token = req.body.token;
+    const panierId = req.body.panierId;
+    if(userId && token) {
+        const lignes_commandes = await LigneCommande.findOne({where: {CommandeId: panierId}});
+        if(lignes_commandes){
+            const panier = await Commande.findOne({where: {id: panierId}});
+            panier.Status = 1;
+            panier.save();
+            console.log('panier a valider')
+            console.log(panier);
+            await Commande.create({
+                UserId: userId,
+                Status: 0
+            })
+            res.json(panier)
+        }
     }
-}
+    else {
+        res.status(401).json({mess: "Veuillez vous connecter."});
+    }
+  }
 
 async function updateOrderStatus(req, res){
     if (!req.param.Status || !req.param.CommandeId){
