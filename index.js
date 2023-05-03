@@ -3,12 +3,12 @@ const { sequelize } = require('./data/index');
 const articleRouter = require('./router/article');
 const userRouter = require('./router/user')
 const app = express()
-const port = 3000;
+const { port } = require('./config');
 const cors = require('cors')
 const mysql = require('mysql2');
 const connection = mysql.createConnection({
   host: 'localhost',
-  user: 'cheikhoul',
+  user: 'root',
   password: '09121968.',
   database: 'myShop'
 });
@@ -37,3 +37,5 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
+
+module.exports = app;
