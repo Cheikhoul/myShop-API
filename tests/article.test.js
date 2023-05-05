@@ -20,7 +20,8 @@ describe('Controllers', () => {
 
   describe('getAllArticles', () => {
     it('should return all articles', async () => {
-      const res = await chai.request(app).get('/api/article/articles').set('Authorization', `Bearer ${adminToken}`);
+      const res = await chai.request(app).get('/api/article/articles')
+      .set('Authorization', `Bearer ${adminToken}`);
       expect(res.status).to.equal(200);
       expect(res.body).to.be.a('array');
     });

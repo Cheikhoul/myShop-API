@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  myshopapi:
+    image: myshopapi
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+      DB_HOST: myshopdb
+      DB_USER: root
+      DB_PASSWORD: 09121968.
+      DB_NAME: myShopdb
+    ports:
+      - 3000:3000
+    depends_on:
+      - myshopdb
+    command: ["./wait-for-db.sh", "myshopdb", "node", "index.js"]
+
+  myshopdb:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 09121968.
+      MYSQL_DATABASE: myShop
+    volumes:
+      - "db_data:/var/lib/mysql"
+    
+volumes:
+  db_data:
