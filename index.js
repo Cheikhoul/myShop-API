@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express')
 const { sequelize } = require('./data/index');
 const articleRouter = require('./router/article');
@@ -8,10 +9,11 @@ const cors = require('cors')
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '09121968.',
-  database: 'myShop'
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: 'myShop',
+  port: process.env.DB_PORT || 3306
 });
 
 connection.query('CREATE DATABASE IF NOT EXISTS myShop', function(err, results) {
@@ -26,7 +28,7 @@ connection.query('CREATE DATABASE IF NOT EXISTS myShop', function(err, results) 
 (async () => {
     await sequelize.sync({ force: false });
 })();
-app.use(express.json())
+app.use(express.json()) 
 app.use(cors())
 app.use('/api/user', userRouter)
 app.use('/api/article', articleRouter)
