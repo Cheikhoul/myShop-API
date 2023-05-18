@@ -19,5 +19,32 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/2.18.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+
+      - name: Build and Start Docker Containers
+        run: docker compose up --build -d
+
+      - name: Wait for DB
+        run: |
+          for i in {1..10}
+          do
+            nc -z 127.0.0.1 3306 && echo Success && exit 0
+            echo -n .
+            sleep 1
+          done
+          echo Failed waiting for DB && exit 1
+
       - run: npm ci
-      - run: npm test
+
+      - name: Run Tests
+        run: npm test
+        env:
+          DB_HOST: localhost
+          DB_PORT: 3306
+          DB_USER: cheikhouol
+          DB_PASSWORD: "09121968."
+          DB_NAME: myShop
+          DB_HOST: myshopdb
